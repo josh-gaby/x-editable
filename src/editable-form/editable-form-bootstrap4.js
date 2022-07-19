@@ -1,5 +1,5 @@
 /*
-Editableform based on Twitter Bootstrap 3
+Editableform based on Twitter Bootstrap 4
 */
 (function ($) {
     "use strict";

@@ -76,6 +76,11 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
             
             //init input
             this.initInput();
+
+            // For width of input in form
+            if (this.options.inputWidth !== 'auto') {
+                this.input.$tpl.css("width", this.options.inputWidth);
+            }
             
             //append input to form
             this.$form.find('div.editable-input').append(this.input.$tpl);            

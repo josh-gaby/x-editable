@@ -73,6 +73,17 @@ require(["loader", jqurl], function(loader) {
                        ];
               break;
 
+            case 'bootstrap5':
+                custom = [
+                    'test/unit/datefield',
+                    'test/unit/date',
+                    'test/unit/datetimefield',
+                    'test/unit/datetime',
+                    //'test/unit/wysihtml5'
+                    'test/unit/typeaheadjs'
+                ];
+                break;
+
             default:  
               custom = ['test/unit/dateuifield', 'test/unit/dateui'];
         }

@@ -58,7 +58,7 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
             
             //init form template and buttons
             this.initTemplate();
-            if(this.options.showbuttons) {
+            if(this.options.showbuttons && this.options.showbuttons !== "false") {
                 this.initButtons();
             } else {
                 this.$form.find('.editable-buttons').remove();

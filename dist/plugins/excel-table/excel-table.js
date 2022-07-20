@@ -21,7 +21,7 @@
 (function($){
     "use strict";
 
-    var excelTable = jQuery.prototype = {
+    var excelTable = {
         init: function () {
             var $td = $('a.editable').parent();
             $td.addClass('editable-td');
@@ -108,4 +108,8 @@
             $(document).off('keydown.excel.table');
         }
     };
+
+    $.extend({
+        excelTable: excelTable
+    })
 }(window.jQuery));

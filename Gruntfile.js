@@ -4,7 +4,8 @@ function getFiles() {
     lib = 'src/',
     forms = lib+'editable-form/',
     inputs = lib+'inputs/',
-    containers = lib+'containers/';  
+    containers = lib+'containers/',
+    plugins = lib+'plugins/';
 
     //config for different cores of lib 
     var config = {
@@ -126,7 +127,7 @@ function getFiles() {
         inputs+'html5types.js',
         inputs+'select2/select2.js',
         inputs+'combodate/lib/combodate.js', 
-        inputs+'combodate/combodate.js'    
+        inputs+'combodate/combodate.js'
     ]; 
 
     //common css files
@@ -330,7 +331,9 @@ module.exports = function(grunt) {
             {expand: true, flatten: true, dest: '<%= dist %>/jqueryui-editable/img/', src: 'src/img/*'},
             {expand: true, flatten: true, dest: '<%= dist %>/jquery-editable/img/', src: 'src/img/*'},
             //licences
-            {expand: true, flatten: true, dest: '<%= dist %>/', src: ['LICENSE-MIT', 'README.md', 'CHANGELOG.txt']}
+            {expand: true, flatten: true, dest: '<%= dist %>/', src: ['LICENSE-MIT', 'README.md', 'CHANGELOG.txt']},
+            // Plugins
+            {expand: true, flatten: false, dest: '<%= dist %>/plugins/', cwd: 'src/plugins', src: '**/*'}
             ]
         },
         inputs_ext: {

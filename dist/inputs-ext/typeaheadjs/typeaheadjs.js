@@ -13,7 +13,7 @@ It is mainly replacement of typeahead in Bootstrap 3.
 $(function(){
     $('#country').editable({
         value: 'ru',
-        typeahead: {
+        typeahead: [{minLength: 2},{
             name: 'country',
             local: [
                 {value: 'ru', tokens: ['Russia']}, 
@@ -23,7 +23,7 @@ $(function(){
             template: function(item) {
                 return item.tokens[0] + ' (' + item.value + ')'; 
             } 
-        }
+        }]
     });
 });
 </script>
@@ -42,7 +42,13 @@ $(function(){
             this.renderClear();
             this.setClass();
             this.setAttr('placeholder');
-            
+
+            if($.isArray(this.options.typeahead)){
+                this.$input.typeahead.apply(this.$input, this.options.typeahead);
+            } else{
+                this.$input.typeahead(this.options.typeahead);
+            }
+
             // need to set kewdown handler before apply typeahead
             // for correct autosubmit
             this.isAutosubmit = false;
@@ -58,7 +64,7 @@ $(function(){
             });            
             
             // apply typeaheadjs
-            this.$input.typeahead(this.options.typeahead);
+            this.$input.typeahead.apply(this.$input, this.options.typeahead);
             
             // copy `input-sm | input-lg` classes to placeholder input
             if($.fn.editableform.engine === 'bs3') {

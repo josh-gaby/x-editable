@@ -184,18 +184,14 @@ module.exports = function(grunt) {
  var dp_ui_ver = '1.10.3';
  
  //module for testing
- var module = ''; 
-// module = '&module=combodate';
-// module = '&module=textarea';
-//module = '&module=select';
-//module = '&module=text';
+ var module = '';
 
 //test on several jquery versions
  var qunit_testover = [];
  ['bs5', 'bs4', 'bs3', 'bootstrap', 'jqueryui', 'plain'].forEach(function(f){
      ['popup', 'inline'].forEach(function(c){
-         ['1.7.2', '1.8.3', '1.9.1', '1.10.2', '2.0.3'].forEach(function(jqver) {
-             qunit_testover.push('http://localhost:8000/test/index.html?f='+f+'&c='+c+'&jquery='+jqver+module); 
+         ['1.7.2', '1.8.3', '1.9.1', '1.10.2', '2.0.3', '2.1.3', '2.2.3', '3.0.0', '3.2.0', '3.3.0', '3.4.0', '3.5.0', '3.6.0'].forEach(function(jqver) {
+             qunit_testover.push('http://localhost:8000/test/index.html?f='+f+'&c='+c+'&jquery='+jqver+module);
          });
      });
  });    
@@ -207,7 +203,7 @@ module.exports = function(grunt) {
         '* <%= pkg.description %>\n' +
         '* <%= pkg.homepage %>\n' +
         '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-        ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n';
+        ' Licensed MIT %> */\n';
  
  files.concat_files.options = {banner: banner};
  files.min_files.options = {banner: banner};
@@ -303,11 +299,12 @@ module.exports = function(grunt) {
         browser: true,
         evil: false,
         globals: {
-            jQuery: true
+            jQuery: true,
+            bootstrap: true         // bootstrap 5 no longer uses jQuery
         },  
       },
-      js: [   'Gruntfile.js', 
-              'src/editable-form/*.js', 
+      js: [   'Gruntfile.js',
+              'src/editable-form/*.js',
               'src/containers/*.js', 
               'src/element/*.js', 
               
@@ -319,7 +316,7 @@ module.exports = function(grunt) {
               'src/inputs/select2/*.js',
               
               'src/inputs-ext/address/*.js',
-              'src/inputs-ext/wysihtml5/*.js'
+              'src/inputs-ext/wysihtml5/*.js',
           ]
     },
     copy: {

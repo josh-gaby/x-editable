@@ -1,7 +1,7 @@
 /*! X-editable - v1.5.3 
 * In-place editing with Twitter Bootstrap, jQuery UI or pure jQuery
 * http://github.com/vitalets/x-editable
-* Copyright (c) 2018 Vitaliy Potapov; Licensed MIT */
+* Copyright (c) 2022 Vitaliy Potapov; Licensed MIT %> */
 /**
 Form with single input element, two buttons and two states: normal/loading.
 Applied as jQuery method to DIV tag (not to form tag!). This is because form can be in loading state when spinner shown.
@@ -80,6 +80,11 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
             
             //init input
             this.initInput();
+
+            // For width of input in form
+            if (this.options.inputWidth !== 'auto') {
+                this.input.$tpl.css("width", this.options.inputWidth);
+            }
             
             //append input to form
             this.$form.find('div.editable-input').append(this.input.$tpl);            
@@ -681,19 +686,25 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
         * for details see http://stackoverflow.com/questions/7410348/how-to-set-json-format-to-html5-data-attributes-in-the-jquery
         */
         tryParseJson: function(s, safe) {
-            if (typeof s === 'string' && s.length && s.match(/^[\{\[].*[\}\]]$/)) {
-                if (safe) {
-                    try {
+            if (typeof s === 'string' && s.length) {
+                try {
+                    JSON.parse(s);
+                    if (safe) {
+                        try {
+                            /*jslint evil: true*/
+                            s = (new Function('return ' + s))();
+                            /*jslint evil: false*/
+                        } catch (e) {} finally {
+                            return s;
+                        }
+                    } else {
                         /*jslint evil: true*/
                         s = (new Function('return ' + s))();
                         /*jslint evil: false*/
-                    } catch (e) {} finally {
-                        return s;
                     }
-                } else {
-                    /*jslint evil: true*/
-                    s = (new Function('return ' + s))();
-                    /*jslint evil: false*/
+                    return s;
+                } catch (e) {
+                    // pass
                 }
             }
             return s;
@@ -972,7 +983,7 @@ Applied as jQuery method.
                     //for some reason FF 20 generates extra event (click) in select2 widget with e.target = document
                     //we need to filter it via construction below. See https://github.com/vitalets/x-editable/issues/199
                     //Possibly related to http://stackoverflow.com/questions/10119793/why-does-firefox-react-differently-from-webkit-and-ie-to-click-event-on-selec
-                    if($target.is(document)) {
+                    if($target.is(document) || $target.is(document.body)) {
                         return;
                     }
                     
@@ -1109,7 +1120,7 @@ Applied as jQuery method.
             //if form already exist - delete previous data 
             if(this.$form) {
                 //todo: destroy prev data!
-                //this.$form.destroy();
+                this.$form.remove();
             }
 
             this.$form = $('<div>');
@@ -2319,7 +2330,17 @@ Makes editable any HTML element on the page. Applied as jQuery method.
         @since 1.4.5        
         @default #FFFF80 
         **/
-        highlight: '#FFFF80'
+        highlight: '#FFFF80',
+
+        /**
+         Set the width of input created in the form. For example '150px'
+         Only for text and select type
+         @property inputWidth
+         @type string
+         @since 1.5.4
+         @default 'auto'
+         **/
+        inputWidth: 'auto'
     };
     
 }(window.jQuery));
@@ -2978,6 +2999,9 @@ $(function(){
                 //this.$clear.css({bottom: delta, right: delta});
             }
             */
+            if (this.options.selectContent) {
+                this.$input.select();
+            }
         },
 
         //show / hide clear button
@@ -3026,7 +3050,15 @@ $(function(){
         @type boolean
         @default true
         **/
-        clear: true
+        clear: true,
+
+        /**
+         Select all content of the input at display
+         @property selectContent
+         @type boolean
+         @default false
+         **/
+        selectContent: false
     });
 
     $.fn.editabletypes.text = Text;
@@ -4702,7 +4734,7 @@ $(function(){
 }(window.jQuery));
 
 /*
-Editableform based on Twitter Bootstrap 3
+Editableform based on Twitter Bootstrap 4
 */
 (function ($) {
     "use strict";

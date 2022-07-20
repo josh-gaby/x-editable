@@ -1,5 +1,5 @@
 /**
-* Editable Popover for Bootstrap 4 based on Popper.js
+* Editable Popover for Bootstrap 5 based on Popper.js
 * ---------------------
 * requires bootstrap-popover.js
 */

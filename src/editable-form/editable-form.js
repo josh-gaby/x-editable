@@ -245,7 +245,12 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
                 this.isSaving = false;
 
                 //run success callback
-                var res = typeof this.options.success === 'function' ? this.options.success.call(this.options.scope, response, newValue) : null;
+                var res = null;
+                if (typeof this.options.success === 'function') {
+                    res = this.options.success.call(this.options.scope, response, newValue);
+                } else if (typeof this.options.success === 'string' && typeof window[this.options.success] === 'function') {
+                    res = window[this.options.success].call(this.options.scope, response, newValue);
+                }
 
                 //if success callback returns false --> keep form open and do not activate input
                 if(res === false) {

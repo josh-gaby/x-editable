@@ -14,40 +14,47 @@
  * excelTable.init();
  * By using this method you can initialize excelTable. All cell of element initialized by $().editable() will be added class .editable-td. After be clicked, the cell will be added class .active and show container.
  *
- * excelTable.enable();
+ * excelTable.disable();
  * Unbinds the events that bound by initializing excelTable.init(). But tht class .editable-td will not be removed.
+ *
+ * excelTable.destroy();
+ * Unbinds the events that bound by initializing excelTable.init() and remove extra classes.
  *
  */
 (function($){
     "use strict";
 
     var excelTable = {
+        tds: [],
+        selected_cell: {row: null, col: null},
         init: function () {
-            var $td = $('a.editable').parent();
-            $td.addClass('editable-td');
-            $(document).on('click.excel.table', '.editable-td', function (e) {
-                var $this = $(this),
-                    $a = $this.children('a');
+            this.tds = $('a.editable').parent();
+            this.tds.addClass('editable-td');
+            $(document).trigger('excel-table.loaded', false);
+            $(document).off('click.excel.table', '.editable-td').on('click.excel.table', '.editable-td', function (e) {
+                var anchor = $(this).children('a');
                 $('.editable-td').removeClass('active');
-                $this.addClass('active');
-                $a.editable('show');
+                $(this).addClass('active');
+                anchor.editable('show');
                 e.stopPropagation();
             });
-            $(document).on('click.excel.table', 'a.editable', function (e) {
-                var $this = $(this),
-                    $td = $this.parent();
+            $(document).off('click.excel.table', 'a.editable').on('click.excel.table', 'a.editable', function (e) {
+                var td = $(this).parent();
                 $('.editable-td').removeClass('active');
-                $td.addClass('active');
+                td.addClass('active');
+                excelTable.selected_cell.row = $(this).closest('tr').index();
+                excelTable.selected_cell.col = $(this).closest('td').index();
+                $(document).trigger('excel-table.changed-cell', [excelTable.selected_cell.row, excelTable.selected_cell.col]);
                 $('a.editable').not(this).editable('hide');
                 e.stopPropagation();
                 e.preventDefault();
             });
-            $(document).on('keydown.excel.table', function (e) {
-                var $currTd = $('.editable-td.active'),
-                    $nextTd,
-                    $tr = $currTd.parent(),
-                    index = $currTd.index(),
-                    keyMap = {
+            $(document).off('keydown.excel.table').on('keydown.excel.table', function (e) {
+                var current_td = $('.editable-td.active'),
+                    next_td,
+                    tr = current_td.parent(),
+                    index = current_td.index(),
+                    key_map = {
                         left: 37,
                         right: 39,
                         up: 38,
@@ -57,55 +64,65 @@
                     },
                     key = e.keyCode;
                 switch (key) {
-                    case keyMap.left:
-                        $nextTd = $currTd.prevAll('.editable-td').first();
+                    case key_map.left:
+                        next_td = current_td.prevAll('.editable-td').first();
                         directionChange();
                         break;
-                    case keyMap.right:
-                        $nextTd = $currTd.nextAll('.editable-td').first();
+                    case key_map.right:
+                        next_td = current_td.nextAll('.editable-td').first();
                         directionChange();
                         break;
-                    case keyMap.up:
-                        $nextTd = $tr.prev().find('td').eq(index);
+                    case key_map.up:
+                        next_td = tr.prev().find('td').eq(index);
                         directionChange();
                         break;
-                    case keyMap.down:
-                        $nextTd = $tr.next().find('td').eq(index);
+                    case key_map.down:
+                        next_td = tr.next().find('td').eq(index);
                         directionChange();
                         break;
-                    case keyMap.tab:
+                    case key_map.tab:
                         e.preventDefault();
                         if (e.shiftKey) {
-                            $nextTd = $tr.prev().find('.editable-td').first();
+                            next_td = tr.prev().find('.editable-td').first();
                         } else {
-                            $nextTd = $tr.next().find('.editable-td').first();
+                            next_td = tr.next().find('.editable-td').first();
                         }
                         directionChange();
                         break;
-                    case keyMap.enter:
-                        if ($currTd.children('a.editable-open').length === 0) {
-                            $currTd.children('a').editable('show');
+                    case key_map.enter:
+                        if (current_td.children('a.editable-open').length === 0) {
+                            $(document).trigger('excel-table.start-editing', [excelTable.selected_cell.row, excelTable.selected_cell.col]);
+                            current_td.children('a').editable('show');
                             e.stopPropagation();
                             e.preventDefault();
                         } else {
-                            $currTd.addClass('active');
+                            current_td.addClass('active');
                         }
                         break;
                 }
                 function directionChange() {
-                    $currTd.removeClass('active');
-                    $currTd.children('a').editable('hide');
-                    if ($nextTd.length) {
-                        $nextTd.addClass('active');
+                    current_td.removeClass('active');
+                    current_td.children('a').editable('hide');
+                    if (next_td.length) {
+                        next_td.addClass('active');
+                        excelTable.selected_cell.row = next_td.closest('tr').index();
+                        excelTable.selected_cell.col = next_td.closest('td').index();
                     } else {
-                        $currTd.addClass('active');
+                        current_td.addClass('active');
+                        excelTable.selected_cell.row = current_td.closest('tr').index();
+                        excelTable.selected_cell.col = current_td.closest('td').index();
                     }
+                    $(document).trigger('excel-table.changed-cell', [excelTable.selected_cell.row, excelTable.selected_cell.col]);
                 }
             });
         },
-        enable: function () {
+        disable: function () {
             $(document).off('click.excel.table');
             $(document).off('keydown.excel.table');
+        },
+        destroy: function() {
+            this.disable();
+            this.tds.removeClass('editable-td');
         }
     };
 
